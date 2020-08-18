@@ -9,6 +9,8 @@ public class Window {
     private String title;
     private long window;
 
+    public Input input;
+
     public int frames;
     public long time;
 
@@ -24,6 +26,7 @@ public class Window {
             return;
         }
 
+        input = new Input();
         window = GLFW.glfwCreateWindow(width, height, title, 0, 0);
 
         if (window == 0) {
@@ -34,6 +37,11 @@ public class Window {
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()); // Display to primary monitor
         GLFW.glfwSetWindowPos(window, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2);
         GLFW.glfwMakeContextCurrent(window); // Select window
+
+        GLFW.glfwSetKeyCallback(window, input.getKeyboardCallback());
+        GLFW.glfwSetCursorPosCallback(window, input.getMouseMoveCallback());
+        GLFW.glfwSetMouseButtonCallback(window, input.getMouseButtonsCallback());
+
         GLFW.glfwShowWindow(window);
         GLFW.glfwSwapInterval(1); // Limit Window to 60fps
 
@@ -60,6 +68,13 @@ public class Window {
 
     public boolean shouldClose() {
         return GLFW.glfwWindowShouldClose(window);
+    }
+
+    public void destroy() {
+        input.destroy();
+        GLFW.glfwWindowShouldClose(window);
+        GLFW.glfwDestroyWindow(window);
+        GLFW.glfwTerminate();
     }
 
 }
